@@ -17,7 +17,7 @@ public class DataController {
 
 	@Autowired
 	private DataRepos dRepo;
-	@GetMapping(path = "/monthlylimit/")
+	@GetMapping(path = "/monthlylimit")
 	public short getMonthlyLimit() {
 		System.out.println("get monthly limit");
 		return dRepo.getMonthlyLimit();

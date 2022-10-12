@@ -1,6 +1,7 @@
 package vm.money.track.pojo;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,14 +15,13 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Spend {
     
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-	private String purpose;
-	private int money;
+	private String heading;
     private LocalDate date;
-    //allocate money for others in the same spend for me
-    private short forOthers;
+    private Map<Short, SubSpend> spends;
+    
     
     public int getId() {
 		return id;
@@ -29,30 +29,24 @@ public class Spend {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getMoney() {
-		return money;
-	}
-	public void setMoney(int money) {
-		this.money = money;
-	}
-	public String getPurpose() {
-		return purpose;
-	}
-	public void setPurpose(String purpose) {
-		this.purpose = purpose;
-	}
+	
 	public LocalDate getDate() {
 		return date;
 	}
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public short getForOthers() {
-		return forOthers;
+	public String getHeading() {
+		return heading;
 	}
-	public void setForOthers(short forOthers) {
-		this.forOthers = forOthers;
+	public void setHeading(String heading) {
+		this.heading = heading;
+	}
+	public Map<Short, SubSpend> getSpends() {
+		return spends;
+	}
+	public void setSpends(Map<Short, SubSpend> spends) {
+		this.spends = spends;
 	}
 	
-
 }
