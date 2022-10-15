@@ -3,12 +3,15 @@ package vm.money.track.pojo;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class SubSpend {
 	
-	@Id
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private String purpose;
 	private LocalDate date;
@@ -46,5 +49,9 @@ public class SubSpend {
 		this.money = money;
 	}
 	
+    @Override
+    public String toString() {
+        return "SubSpend "+ id +  purpose +  date +  money +forOthers;
+    }
 	
 }

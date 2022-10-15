@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vm.money.track.pojo.Spend;
+import vm.money.track.pojo.SubSpend;
 import vm.money.track.repos.Facade;
 import vm.money.track.repos.Repos;
+import vm.money.track.repos.SubSpRepos;
 
 @RestController
 @RequestMapping("/spend")
@@ -26,13 +28,22 @@ public class Controller {
     private Facade facade;
     @Autowired
     private Repos repo;
-
+    @Autowired
+    private SubSpRepos sspRepo;
+    
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
         System.out.println("adding spend");
-        System.out.println(sp.getForOthers());
-        repo.save(sp);
+        System.out.println(sp);
+//        sp.getSpends().stream().forEach(ssp->this.saveSubSpend(ssp));
+        sp.getSpends().stream().forEach(ssp->this.sspRepo.save(ssp));
+        sp = repo.save(sp);
+//        int spendId = sp.getId();     
         return sp;
+    }
+    
+    private void saveSubSpend(SubSpend ssp) {
+        repo.saveSubSpend(ssp.getPurpose(), ssp.getDate(), ssp.getMoney(), ssp.getForOthers());
     }
     
     @GetMapping(path = "/{year}/{month}")
@@ -59,7 +70,8 @@ public class Controller {
     	LocalDate end = LocalDate.of(year, month+1, 1);
     	System.out.println(start.toString()+end.toString());
     	try {
-    		return repo.monthlySpent(start, end);
+//    		return repo.monthlySpent(start, end);
+    	    return 0;
     	} catch(org.springframework.aop.AopInvocationException e ) {return 0;}
     }
     
