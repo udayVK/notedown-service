@@ -20,15 +20,15 @@ public interface Repos extends JpaRepository<Spend,Integer>{
 	@Query(value = "select * from spend where date>=?1 and date <?2", nativeQuery = true)
 	List<Spend> getBYMonth(LocalDate firstDayOfMonth, LocalDate FirstDayOfNextMonth);
 
-//	@Query(value="select sum(money) from spend where date>=?1 and date < ?2",nativeQuery = true)
-//	int monthlySpent(LocalDate firstDayOfMonth, LocalDate FirstDayOfNextMonth);
+	@Query(value="select sum(money) from spend where date>=?1 and date < ?2",nativeQuery = true)
+	int monthlySpent(LocalDate firstDayOfMonth, LocalDate FirstDayOfNextMonth);
     
 //	@Transactional
 //	@Query(value = "insert into spend values (?1, ?2)", nativeQuery = true)
 //    void save(String heading, LocalDate date);
 	
-	@Query(value = "insert into sub_spend (purpose, date, money, for_others) values (?1, ?2, ?3, ?4)", nativeQuery = true)
-	void saveSubSpend(String purpose, LocalDate date, short money, short forOthers);
+//	@Query(value = "insert into sub_spend (purpose, date, money, for_others) values (?1, ?2, ?3, ?4)", nativeQuery = true)
+//	void saveSubSpend(String purpose, LocalDate date, short money, short forOthers);
 
 
 	

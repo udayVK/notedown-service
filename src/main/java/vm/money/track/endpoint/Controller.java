@@ -2,6 +2,7 @@ package vm.money.track.endpoint;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vm.money.track.pojo.Spend;
 import vm.money.track.pojo.SubSpend;
+import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.Facade;
 import vm.money.track.repos.Repos;
+import vm.money.track.repos.SpendRepo;
 import vm.money.track.repos.SubSpRepos;
 
 @RestController
@@ -29,21 +32,17 @@ public class Controller {
     @Autowired
     private Repos repo;
     @Autowired
-    private SubSpRepos sspRepo;
+    private CategoryRepo ctRepo;
+    
+    // to use in the method getAllExistingCategoriesLike
+    private List<String> categories;
     
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
-        System.out.println("adding spend");
-        System.out.println(sp);
-//        sp.getSpends().stream().forEach(ssp->this.saveSubSpend(ssp));
-        sp.getSpends().stream().forEach(ssp->this.sspRepo.save(ssp));
-        sp = repo.save(sp);
-//        int spendId = sp.getId();     
-        return sp;
-    }
-    
-    private void saveSubSpend(SubSpend ssp) {
-        repo.saveSubSpend(ssp.getPurpose(), ssp.getDate(), ssp.getMoney(), ssp.getForOthers());
+        if(sp.getId()==0) {
+            ctRepo.save(sp.getCategory());
+        }
+        return repo.save(sp);
     }
     
     @GetMapping(path = "/{year}/{month}")
@@ -70,12 +69,27 @@ public class Controller {
     	LocalDate end = LocalDate.of(year, month+1, 1);
     	System.out.println(start.toString()+end.toString());
     	try {
-//    		return repo.monthlySpent(start, end);
-    	    return 0;
-    	} catch(org.springframework.aop.AopInvocationException e ) {return 0;}
+    		return repo.monthlySpent(start, end);
+//    	    return 0;
+    	} catch(Exception e ) {System.out.println(e.getStackTrace()); return 0;}
     }
     
     public void deleteOld(@RequestBody LocalDate ld) {
     	facade.deleteOld(ld);
+    }
+    
+    //use to filter the catefories based on a keyword
+    public List<String> getAllExistingCategoriesLike(String keyWord) {
+        if(this.categories==null || this.categories.size()==0) {
+            this.getAllExistingCategories();//populate the field, categories
+        }
+        categories.stream().filter(h->h.startsWith(keyWord) || h.contains(keyWord)).collect(Collectors.toList());
+        return categories;
+    }
+    
+    @GetMapping(path = "/categories")
+    public List<String>  getAllExistingCategories(){
+        this.categories = ctRepo.findAll().stream().map(c->c.getHeading()).collect(Collectors.toList());
+        return this.categories;
     }
 }

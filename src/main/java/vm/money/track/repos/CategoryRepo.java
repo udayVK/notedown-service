@@ -1,11 +1,11 @@
 package vm.money.track.repos;
 
+import vm.money.track.pojo.Category;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import vm.money.track.pojo.SubSpend;
-
 @Repository
-public interface SubSpRepos extends JpaRepository<SubSpend, Integer>{
+public interface CategoryRepo extends JpaRepository<Category, Integer>{
 
 }
