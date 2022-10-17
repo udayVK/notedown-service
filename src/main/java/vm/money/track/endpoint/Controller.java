@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,13 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Spend;
-import vm.money.track.pojo.SubSpend;
 import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.Facade;
 import vm.money.track.repos.Repos;
-import vm.money.track.repos.SpendRepo;
-import vm.money.track.repos.SubSpRepos;
 
 @RestController
 @RequestMapping("/spend")
@@ -34,13 +34,17 @@ public class Controller {
     @Autowired
     private CategoryRepo ctRepo;
     
-    // to use in the method getAllExistingCategoriesLike
-    private List<String> categories;
+    // to use in the method getAllExistingCategoriesLike etc..
+    private List<Category> categories;
+    private List<String> categoryHeadings;
     
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
-        if(sp.getId()==0) {
+        if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
+        }
+        else {
+            sp.setCategory(this.categories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0));
         }
         return repo.save(sp);
     }
@@ -79,17 +83,19 @@ public class Controller {
     }
     
     //use to filter the catefories based on a keyword
-    public List<String> getAllExistingCategoriesLike(String keyWord) {
+    public List<Category> getAllExistingCategoriesLike(String keyWord) {
         if(this.categories==null || this.categories.size()==0) {
             this.getAllExistingCategories();//populate the field, categories
         }
-        categories.stream().filter(h->h.startsWith(keyWord) || h.contains(keyWord)).collect(Collectors.toList());
+        categories.stream().filter(c->c.getHeading().startsWith(keyWord) || c.getHeading().contains(keyWord)).collect(Collectors.toList());
         return categories;
     }
     
     @GetMapping(path = "/categories")
-    public List<String>  getAllExistingCategories(){
-        this.categories = ctRepo.findAll().stream().map(c->c.getHeading()).collect(Collectors.toList());
+    @PostConstruct
+    public List<Category>  getAllExistingCategories(){
+        this.categories = ctRepo.findAll();
+        this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());
         return this.categories;
     }
 }
