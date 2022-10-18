@@ -24,7 +24,10 @@ public class DataController {
 	}
 	@PostMapping(path = "/monthlylimit/{ml}")
 	public void setMonthlyLimit(@PathVariable(name = "ml")short limit) {
-		System.out.println("set monthly limit of "+ limit);
+		System.out.println("setting monthly limit of "+ limit);
+		if(dRepo.tableHasData()>0) {
+		    dRepo.updateMonthlyLimit(limit);
+		}
 		dRepo.setMonthlyLimit(limit);
 	}
 }
