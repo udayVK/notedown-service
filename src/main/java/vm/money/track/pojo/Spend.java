@@ -6,34 +6,40 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Spend {
-    
+	
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+	private int id;
 	private String purpose;
-	private int money;
-    private LocalDate date;
-    //allocate money for others in the same spend for me
-    private short forOthers;
-    
+	private LocalDate date;
+	private short money;
+	private short forOthers;
+	@ManyToOne
+	@JoinColumn(name = "heading")
+	private Category category; 
+	
+	public Category getCategory() {
+        return category;
+    }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
     public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getMoney() {
-		return money;
+	public short getForOthers() {
+		return forOthers;
 	}
-	public void setMoney(int money) {
-		this.money = money;
+	public void setForOthers(short forOthers) {
+		this.forOthers = forOthers;
 	}
 	public String getPurpose() {
 		return purpose;
@@ -47,12 +53,16 @@ public class Spend {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public short getForOthers() {
-		return forOthers;
+	public short getMoney() {
+		return money;
 	}
-	public void setForOthers(short forOthers) {
-		this.forOthers = forOthers;
+	public void setMoney(short money) {
+		this.money = money;
 	}
 	
-
+    @Override
+    public String toString() {
+        return "Spend "+ id +  purpose +  date +  money +forOthers;
+    }
+	
 }
