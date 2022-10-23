@@ -2,6 +2,9 @@ package vm.money.track.endpoint;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Spend;
+import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.Facade;
 import vm.money.track.repos.Repos;
 
@@ -26,13 +31,22 @@ public class Controller {
     private Facade facade;
     @Autowired
     private Repos repo;
-
+    @Autowired
+    private CategoryRepo ctRepo;
+    
+    // to use in the method getAllExistingCategoriesLike etc..
+    private List<Category> categories;
+    private List<String> categoryHeadings;
+    
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
-        System.out.println("adding spend");
-        System.out.println(sp.getForOthers());
-        repo.save(sp);
-        return sp;
+        if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
+            ctRepo.save(sp.getCategory());
+        }
+        else {
+            sp.setCategory(this.categories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0));
+        }
+        return repo.save(sp);
     }
     
     @GetMapping(path = "/{year}/{month}")
@@ -60,10 +74,28 @@ public class Controller {
     	System.out.println(start.toString()+end.toString());
     	try {
     		return repo.monthlySpent(start, end);
-    	} catch(org.springframework.aop.AopInvocationException e ) {return 0;}
+//    	    return 0;
+    	} catch(Exception e ) {System.out.println(e.getStackTrace()); return 0;}
     }
     
     public void deleteOld(@RequestBody LocalDate ld) {
     	facade.deleteOld(ld);
+    }
+    
+    //use to filter the catefories based on a keyword
+    public List<Category> getAllExistingCategoriesLike(String keyWord) {
+        if(this.categories==null || this.categories.size()==0) {
+            this.getAllExistingCategories();//populate the field, categories
+        }
+        categories.stream().filter(c->c.getHeading().startsWith(keyWord) || c.getHeading().contains(keyWord)).collect(Collectors.toList());
+        return categories;
+    }
+    
+    @GetMapping(path = "/categories")
+    @PostConstruct
+    public List<Category>  getAllExistingCategories(){
+        this.categories = ctRepo.findAll();
+        this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());
+        return this.categories;
     }
 }
