@@ -1,6 +1,7 @@
 package vm.money.track.repos;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,15 @@ public class Facade {
 
     public List<Spend> getByMonth(int year, int month){
     	LocalDate start = LocalDate.of(year, month, 1);
-    	LocalDate end = LocalDate.of(year, month+1, 1);
+    	LocalDate end = null;
+    	if(month == 12) {
+    	    end = LocalDate.of(year+1, Month.JANUARY, 1);
+    	    System.out.println("dec month");
+    	}
+    	else{
+    	    end = LocalDate.of(year, month+1, 1);
+    	    System.out.println("otehr month");
+    	}
     	return repo.getBYMonth(start, end);
     }
 	public List<Spend> getOfspeceficPurpose(String purpose) {

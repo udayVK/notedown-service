@@ -46,6 +46,7 @@ public class Controller {
         else {
             sp.setCategory(this.categories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0));
         }
+        System.out.println(sp);
         return repo.save(sp);
     }
     
@@ -70,7 +71,9 @@ public class Controller {
     @GetMapping(path = "/monthlyspent/{year}/{month}")
     public int getMonthlySpent(@PathVariable int year, @PathVariable int month){
     	LocalDate start = LocalDate.of(year, month, 1);
-    	LocalDate end = LocalDate.of(year, month+1, 1);
+    	LocalDate end = null;
+    	if(month == 12) end = LocalDate.of(year+1, 1, 1);
+    	else end = LocalDate.of(year, month+1, 1);
     	System.out.println(start.toString()+end.toString());
     	try {
     		return repo.monthlySpent(start, end);
