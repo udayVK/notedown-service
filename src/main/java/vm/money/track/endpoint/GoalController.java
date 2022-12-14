@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vm.money.track.pojo.Goal;
-import vm.money.track.pojo.Loan;
 import vm.money.track.repos.GoalRepos;
 
 @RestController
