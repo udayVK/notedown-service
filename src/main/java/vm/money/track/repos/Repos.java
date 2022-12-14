@@ -28,8 +28,5 @@ public interface Repos extends JpaRepository<Spend,Integer>{
 	
 //	@Query(value = "insert into sub_spend (purpose, date, money, for_others) values (?1, ?2, ?3, ?4)", nativeQuery = true)
 //	void saveSubSpend(String purpose, LocalDate date, short money, short forOthers);
-
-	List<Spend> findByPurpose(String purpose);
-	
 	
 }
