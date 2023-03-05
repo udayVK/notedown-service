@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import vm.money.track.pojo.Loan;
+import vm.money.track.pojo.LoanHistory;
+import vm.money.track.repos.LoanHistoryRepos;
 import vm.money.track.repos.LoanRepos;
 
 @RestController
@@ -20,20 +24,27 @@ import vm.money.track.repos.LoanRepos;
 public class LoanController {
 	
 	private LoanRepos lr;
+	private LoanHistoryRepos lhr;
 	
 	//for Autowiring repository
-	public LoanController(LoanRepos lr) { this.lr=lr; }
+	public LoanController(LoanRepos lr, LoanHistoryRepos lhr) { this.lr=lr; this.lhr = lhr;}
 	
 	@PostMapping(path="/new")
-	public Loan addLoan(@RequestBody Loan l) {
-		System.out.println("addign loan"+l.getName());
-		return lr.save(l);
+	public Loan addLoan(@RequestBody Loan loan) throws JsonProcessingException {
+		Loan savedLoan = lr.save(loan);
+		List<LoanHistory> pays = loan.getLoanHistory();
+		for(int i = 0; i < pays.size(); i++){
+			LoanHistory pay = pays.get(i);
+			pay.setLoan(savedLoan);
+			lhr.save(pay);
+		}
+		return savedLoan;
 	}
+
 	@GetMapping(path = "/all")
 	public List<Loan> findAll() {
 		return lr.findAll();
 	}
-
 
 	@GetMapping(path = "/taken")
 	public List<Loan> takenLoans(){
@@ -56,10 +67,9 @@ public class LoanController {
 		lr.edit(loan.getReason(),loan.getPendingAmount(),loan.getTotalAmount(),loan.getId());
 		return loan;
 	}
+
 	@GetMapping(path = "/pending/all")
 	public int getTotalPendingAmount() {
 		return lr.getTotalPendingAmount();
 	}
-	
-	
 }
