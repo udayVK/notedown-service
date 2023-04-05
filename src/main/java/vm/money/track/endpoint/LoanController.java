@@ -1,6 +1,7 @@
 package vm.money.track.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class LoanController {
 	private LoanRepos lr;
 	private LoanHistoryRepos lhr;
 	
-	//for Autowiring repository
+	//for Autowiring repositories
 	public LoanController(LoanRepos lr, LoanHistoryRepos lhr) { this.lr=lr; this.lhr = lhr;}
 	
 	@PostMapping(path="/new")
@@ -71,5 +72,20 @@ public class LoanController {
 	@GetMapping(path = "/pending/all")
 	public int getTotalPendingAmount() {
 		return lr.getTotalPendingAmount();
+	}
+
+	@PostMapping(path = "pay/add")
+	public Loan addATransaction(@RequestBody LoanHistory lH, @RequestParam(name = "loanid", required = true) Integer loanId) throws Exception {
+		Optional<Loan> loan = this.lr.findById(loanId);
+		if(loan.isPresent()){
+			Loan currentLoan = loan.get();
+			currentLoan.getLoanHistory().add(lH);
+			lH.setLoan(currentLoan);
+			this.lhr.save(lH);
+			return currentLoan;
+		}
+		else{
+			throw new Exception(String.format("Loan with id %d not found", loanId));
+		}
 	}
 }
