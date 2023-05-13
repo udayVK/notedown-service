@@ -1,10 +1,14 @@
 package vm.money.track.pojo;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Loan {
@@ -23,6 +27,9 @@ public class Loan {
 	//true if already paid
 	//false if yet to pay
 	private boolean status;
+	
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = LoanHistory.class, mappedBy = "loan")
+	private List<LoanHistory> loanHistory; 
 	
 	public int getId() {
 		return id;
@@ -66,13 +73,24 @@ public class Loan {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	
 	public boolean isStatus() {
 		return status;
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
+	public List<LoanHistory> getLoanHistory() {
+		return loanHistory;
+	}
+	public void setLoanHistory(List<LoanHistory> loanHistory) {
+		this.loanHistory = loanHistory;
+	}
 	
+	@Override
+	public String toString() {
+		return "Loan [id=" + id + ", type=" + type + ", name=" + name + ", totalAmount=" + totalAmount
+				+ ", pendingAmount=" + pendingAmount + ", date=" + date + ", reason=" + reason + ", status=" + status
+				+ ", loanHistory=" + loanHistory + "]";
+	}
 	
 }
