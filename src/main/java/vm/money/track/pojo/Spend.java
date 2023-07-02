@@ -17,7 +17,7 @@ public class Spend {
 	private int id;
 	private String purpose;
 	private LocalDate date;
-	private short money;
+	private int money;
 	private short forOthers;
 	@ManyToOne
 	@JoinColumn(name = "heading")
@@ -53,10 +53,10 @@ public class Spend {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public short getMoney() {
+	public int getMoney() {
 		return money;
 	}
-	public void setMoney(short money) {
+	public void setMoney(int money) {
 		this.money = money;
 	}
 	
