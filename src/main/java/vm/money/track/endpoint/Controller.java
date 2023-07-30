@@ -94,7 +94,7 @@ public class Controller {
     }
     
     @GetMapping(path = "/categories")
-    @PostConstruct
+    // @PostConstruct
     public List<Category>  getAllExistingCategories(){
         this.categories = ctRepo.findAll();
         this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());
