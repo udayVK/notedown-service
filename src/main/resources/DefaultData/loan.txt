@@ -1,5 +1,0 @@
-true-#-Dinesh-#-25000-#-15000-#-Home-#-false
-true-#-Omkar-#-3000-#-3000-#-Travel-#-false
-false-#-Mahesh-#-55000-#-20000-#-Laptop-#-false
-true-#-Deepika-#-12000-#-2000-#-Birthday Party-#-false
-true-#-Manasa-#-14000-#-0-#-phone-#-true
