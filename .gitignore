@@ -36,3 +36,9 @@ build/
 src/main/resources/application.properties
 ### maven dependencies may be ?
 .mvn/
+
+#
+src/main/resources/DefaultData/*
+
+# ignore all hidden files
+.*

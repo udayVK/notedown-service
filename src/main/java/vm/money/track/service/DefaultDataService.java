@@ -43,7 +43,7 @@ public class DefaultDataService {
                     sp.setPurpose(spendItems.get(0));
                     sp.setMoney(Integer.parseInt(spendItems.get(1)));
                     sp.setForOthers(Short.parseShort(spendItems.get(2)));
-                    sp.setDate(LocalDate.now().withDayOfMonth(new Random().nextInt(1,28)));
+                    sp.setDate(LocalDate.now().withMonth(rand.nextInt(1,12)).withDayOfMonth(new Random().nextInt(1,28)));
                     sp.setCategory(new Category(spendItems.get(3)));
                     System.out.println(sp);
                     this.spendRepo.save(sp);
