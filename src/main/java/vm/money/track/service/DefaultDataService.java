@@ -8,23 +8,25 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 
+import vm.money.track.endpoint.Controller;
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Loan;
 import vm.money.track.pojo.Spend;
 import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.LoanRepos;
-import vm.money.track.repos.Repos;
 
 @Service
 public class DefaultDataService {
     
     private CategoryRepo catRepos;
-	private Repos spendRepo;
+	private Controller spendController;
     private LoanRepos loanRepo;
     
-    public DefaultDataService(CategoryRepo catRepos, Repos spendRepo, LoanRepos loanRepo ) {
+    private static final String DELIMITER = "-#-"; 
+    
+    public DefaultDataService(CategoryRepo catRepos, Controller spendController, LoanRepos loanRepo, GoalRepos goalRepo ) {
         this.catRepos = catRepos;
-        this.spendRepo = spendRepo;
+        this.spendController = spendController;
         this.loanRepo = loanRepo;
     }
 
@@ -38,7 +40,7 @@ public class DefaultDataService {
                 String line;
                 while((line=reader.readLine())!=null) {
                     // Arrays.stream(line.split("-#-")).map(item->item+=" ").forEach(System.out::print);
-                    List<String> spendItems = Arrays.asList(line.split("-#-"));
+                    List<String> spendItems = Arrays.asList(line.split(DELIMITER));
                     Spend sp = new Spend();
                     sp.setPurpose(spendItems.get(0));
                     sp.setMoney(Integer.parseInt(spendItems.get(1)));
@@ -46,7 +48,7 @@ public class DefaultDataService {
                     sp.setDate(LocalDate.now().withMonth(rand.nextInt(1,12)).withDayOfMonth(new Random().nextInt(1,28)));
                     sp.setCategory(new Category(spendItems.get(3)));
                     System.out.println(sp);
-                    this.spendRepo.save(sp);
+                    this.spendController.add(sp);
                 }
 		} catch (Exception e) {
             System.out.println(e);
@@ -65,7 +67,7 @@ public class DefaultDataService {
                 Random rand = new Random();
                 String line;
                 while((line=reader.readLine())!=null) {
-                    List<String> loanItems = Arrays.asList(line.split("-#-"));
+                    List<String> loanItems = Arrays.asList(line.split(DELIMITER));
                     Loan loan = new Loan();
                     loan.setType(Boolean.parseBoolean(loanItems.get(0)));
                     loan.setName(loanItems.get(1));

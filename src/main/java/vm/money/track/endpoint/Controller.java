@@ -39,6 +39,7 @@ public class Controller {
     
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
+        this.getAllExistingCategories();
         if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
         }
