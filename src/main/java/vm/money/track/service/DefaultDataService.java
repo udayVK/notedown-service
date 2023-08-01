@@ -24,7 +24,7 @@ public class DefaultDataService {
     
     private static final String DELIMITER = "-#-"; 
     
-    public DefaultDataService(CategoryRepo catRepos, Controller spendController, LoanRepos loanRepo, GoalRepos goalRepo ) {
+    public DefaultDataService(CategoryRepo catRepos, Controller spendController, LoanRepos loanRepo) {
         this.catRepos = catRepos;
         this.spendController = spendController;
         this.loanRepo = loanRepo;
