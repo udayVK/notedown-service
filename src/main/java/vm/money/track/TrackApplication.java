@@ -48,8 +48,6 @@ public class TrackApplication {
 	}
 }
 
-		this.spendRepo.save(sp);
-
-		return "success";
-	}		
-}
+// File spendFile = new File("classpath:defaultdata/spend.txt");
+// File spendFile = new File("../resources/defaultdata/spend.txt");
+// File spendFile = new File("resources/DefaultData/spend.txt");
