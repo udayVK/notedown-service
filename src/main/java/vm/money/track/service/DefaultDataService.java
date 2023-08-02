@@ -1,8 +1,8 @@
 package vm.money.track.service;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -12,29 +12,26 @@ import vm.money.track.endpoint.Controller;
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Loan;
 import vm.money.track.pojo.Spend;
-import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.LoanRepos;
 
 @Service
 public class DefaultDataService {
     
-    private CategoryRepo catRepos;
 	private Controller spendController;
     private LoanRepos loanRepo;
     
     private static final String DELIMITER = "-#-"; 
     
-    public DefaultDataService(CategoryRepo catRepos, Controller spendController, LoanRepos loanRepo) {
-        this.catRepos = catRepos;
+    public DefaultDataService(Controller spendController, LoanRepos loanRepo) {
         this.spendController = spendController;
         this.loanRepo = loanRepo;
     }
 
     public boolean pupulateSpendData() {
         System.out.println("populating spends");
-        File spendFile = new File("src/main/resources/DefaultData/spend.txt");
-		try (   FileReader filereader = new FileReader(spendFile);
-                BufferedReader reader = new BufferedReader(filereader)
+        InputStream spendStream = this.getClass().getClassLoader().getResourceAsStream("DefaultData/spend.txt");
+		try (   InputStreamReader fileReader = new InputStreamReader(spendStream);
+                BufferedReader reader = new BufferedReader(fileReader);
             ) {
                 Random rand = new Random();
                 String line;
@@ -60,9 +57,9 @@ public class DefaultDataService {
 
     public boolean populateLoanData() {
         System.out.println("populating Loans");
-        File loanFile = new File("src/main/resources/DefaultData/loan.txt");
-		try (   FileReader filereader = new FileReader(loanFile);
-                BufferedReader reader = new BufferedReader(filereader)
+        InputStream loanStream = this.getClass().getClassLoader().getResourceAsStream("DefaultData/loan.txt");
+		try (   InputStreamReader fileReader = new InputStreamReader(loanStream);
+                BufferedReader reader = new BufferedReader(fileReader);
             ) {
                 Random rand = new Random();
                 String line;
