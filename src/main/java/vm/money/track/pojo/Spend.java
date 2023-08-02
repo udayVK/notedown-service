@@ -9,6 +9,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 public class Spend {
 	
@@ -21,6 +24,7 @@ public class Spend {
 	private short forOthers;
 	@ManyToOne
 	@JoinColumn(name = "heading")
+	@Cascade(CascadeType.ALL)
 	private Category category; 
 	
 	public Category getCategory() {

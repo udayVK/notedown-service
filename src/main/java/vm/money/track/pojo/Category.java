@@ -13,9 +13,16 @@ public class Category {
     private int id;
    	private String heading;
  
+	
+	public Category() {
+	}
+
+	public Category(String heading) {
+		this.heading = heading;
+	}
     
     
-    public int getId() {
+	public int getId() {
 		return id;
 	}
 	public void setId(int id) {

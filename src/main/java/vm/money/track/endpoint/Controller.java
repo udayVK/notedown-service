@@ -39,6 +39,7 @@ public class Controller {
     
     @PostMapping(path = "/add")
     public Spend add(@RequestBody Spend sp){
+        this.getAllExistingCategories();
         if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
         }
@@ -94,7 +95,7 @@ public class Controller {
     }
     
     @GetMapping(path = "/categories")
-    @PostConstruct
+    // @PostConstruct
     public List<Category>  getAllExistingCategories(){
         this.categories = ctRepo.findAll();
         this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());

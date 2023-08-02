@@ -29,7 +29,7 @@ public interface LoanRepos extends JpaRepository<Loan, Integer>{
 	@Modifying
 	@Transactional
 	@Query(value = "update loan set reason=?1, pending_amount=?2, total_amount=?3 where id=?4",nativeQuery = true)
-	void edit(String reason,short pendAmnt, short totAmnt, int id);
+	void edit(String reason,int pendAmnt, int totAmnt, int id);
 
 	@Query(value  = "select sum(pending_amount) from loan where status = false",nativeQuery = true)
 	int getTotalPendingAmount();

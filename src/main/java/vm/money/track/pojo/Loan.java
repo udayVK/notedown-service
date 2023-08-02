@@ -20,8 +20,8 @@ public class Loan {
     //just to use less memory
 	private boolean type;
 	private String name;
-	private short totalAmount;
-	private short pendingAmount;
+	private int totalAmount;
+	private int pendingAmount;
 	private LocalDate date;
 	private String reason;
 	//true if already paid
@@ -49,16 +49,16 @@ public class Loan {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public short getTotalAmount() {
+	public int getTotalAmount() {
 		return totalAmount;
 	}
-	public void setTotalAmount(short amount) {
-		this.totalAmount = amount;
+	public void setTotalAmount(int i) {
+		this.totalAmount = i;
 	}
-	public short getPendingAmount() {
+	public int getPendingAmount() {
 		return pendingAmount;
 	}
-	public void setPendingAmount(short pendingAmount) {
+	public void setPendingAmount(int pendingAmount) {
 		this.pendingAmount = pendingAmount;
 	}
 	public LocalDate getDate() {
