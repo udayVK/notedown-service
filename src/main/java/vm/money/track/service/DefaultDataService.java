@@ -8,7 +8,7 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 
-import vm.money.track.endpoint.Controller;
+import vm.money.track.endpoint.SpendController;
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Loan;
 import vm.money.track.pojo.Spend;
@@ -17,12 +17,12 @@ import vm.money.track.repos.LoanRepos;
 @Service
 public class DefaultDataService {
     
-	private Controller spendController;
+	private SpendController spendController;
     private LoanRepos loanRepo;
     
     private static final String DELIMITER = "-#-"; 
     
-    public DefaultDataService(Controller spendController, LoanRepos loanRepo) {
+    public DefaultDataService(SpendController spendController, LoanRepos loanRepo) {
         this.spendController = spendController;
         this.loanRepo = loanRepo;
     }
