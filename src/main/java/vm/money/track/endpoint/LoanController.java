@@ -1,8 +1,8 @@
 package vm.money.track.endpoint;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,76 +16,54 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import vm.money.track.pojo.Loan;
 import vm.money.track.pojo.LoanHistory;
-import vm.money.track.repos.LoanHistoryRepos;
-import vm.money.track.repos.LoanRepos;
+import vm.money.track.service.LoanService;
 
 @RestController
 @RequestMapping(path = "/loan")
 @CrossOrigin(value = {"http://localhost:4200"})
 public class LoanController {
-	
-	private LoanRepos lr;
-	private LoanHistoryRepos lhr;
-	
-	//for Autowiring repositories
-	public LoanController(LoanRepos lr, LoanHistoryRepos lhr) { this.lr=lr; this.lhr = lhr;}
+
+	@Autowired
+	private LoanService loanService;
 	
 	@PostMapping(path="/new")
 	public Loan addLoan(@RequestBody Loan loan) throws JsonProcessingException {
-		Loan savedLoan = lr.save(loan);
-		List<LoanHistory> pays = loan.getLoanHistory();
-		for(int i = 0; i < pays.size(); i++){
-			LoanHistory pay = pays.get(i);
-			pay.setLoan(savedLoan);
-			lhr.save(pay);
-		}
-		return savedLoan;
+		return this.loanService.addLoan(loan);
 	}
 
 	@GetMapping(path = "/all")
 	public List<Loan> findAll() {
-		return lr.findAll();
+		return loanService.findAll();
 	}
 
 	@GetMapping(path = "/taken")
 	public List<Loan> takenLoans(){
-		return lr.takenLoans();
+		return loanService.takenLoans();
 	}
 	
 	@GetMapping(path = "/given")
 	public List<Loan> givenLoans(){
-		return lr.givenLoans();
+		return loanService.givenLoans();
 	}
 	
 	@GetMapping(path = "/change")
 	public void changeLoanStatus(@RequestParam(name = "lid") int lid) {
-		lr.changeLoanStatus(lid);
+		loanService.changeLoanStatus(lid);
 	}
 	
 	@PutMapping(path = "/edit")
 	public Loan editLoan(@RequestBody Loan loan) {
-		System.out.println("loan edit");
-		lr.edit(loan.getReason(),loan.getPendingAmount(),loan.getTotalAmount(),loan.getId());
-		return loan;
+		return loanService.editLoan(loan);
+		
 	}
 
 	@GetMapping(path = "/pending/all")
 	public int getTotalPendingAmount() {
-		return lr.getTotalPendingAmount();
+		return loanService.getTotalPendingAmount();
 	}
 
 	@PostMapping(path = "pay/add")
 	public Loan addATransaction(@RequestBody LoanHistory lH, @RequestParam(name = "loanid", required = true) Integer loanId) throws Exception {
-		Optional<Loan> loan = this.lr.findById(loanId);
-		if(loan.isPresent()){
-			Loan currentLoan = loan.get();
-			currentLoan.getLoanHistory().add(lH);
-			lH.setLoan(currentLoan);
-			this.lhr.save(lH);
-			return currentLoan;
-		}
-		else{
-			throw new Exception(String.format("Loan with id %d not found", loanId));
-		}
+		return this.loanService.addATransaction(lH, loanId);
 	}
 }

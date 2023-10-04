@@ -1,20 +1,12 @@
-package vm.money.track.endpoint;
+package vm.money.track.service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Spend;
@@ -22,11 +14,10 @@ import vm.money.track.repos.CategoryRepo;
 import vm.money.track.repos.Facade;
 import vm.money.track.repos.Repos;
 
-@RestController
-@RequestMapping("/spend")
-@CrossOrigin("http://localhost:4200")
-public class Controller {
-	@Autowired
+@Component
+public class SpendService {
+    	
+    @Autowired
     private Facade facade;
     @Autowired
     private Repos repo;
@@ -37,10 +28,9 @@ public class Controller {
     private List<Category> categories;
     private List<String> categoryHeadings;
     
-    @PostMapping(path = "/add")
-    public Spend add(@RequestBody Spend sp){
-        this.getAllExistingCategories();
-        if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
+    public Spend addSpend(Spend sp, boolean saveCategory){
+        this.getSavedCategories();
+        if(saveCategory && !this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
         }
         else {
@@ -50,26 +40,19 @@ public class Controller {
         return repo.save(sp);
     }
     
-    @GetMapping(path = "/{year}/{month}")
-    public List<Spend> spendOfMonthnYear(@PathVariable int year, @PathVariable int month){
+    public List<Spend> getSpendsOfMonth(int year, int month){
     	System.out.println("search for"+year+"-"+month);
 //        return facade.spendOfMonthnYear(year, month);
-    	List<Spend> spl = facade.getByMonth(year, month);
+    	List<Spend> spl = this.filterSpendsOfMonth(year, month);
     	System.out.println(spl.size());
     	return spl;
     }
     
-    @PutMapping(path = "/update/{id}")
-    public Spend updateSpend(@PathVariable int id, @RequestBody Spend sp) {
+    public Spend updateSpend(int id, Spend sp) {
     	return repo.save(sp);
     }
-    
-    @GetMapping(path = "/of/{prp}")
-    public List<Spend> getOfspeceficPurpose(@PathVariable(name = "prp") String purpose){
-    	return facade.getOfspeceficPurpose(purpose);
-    }
-    @GetMapping(path = "/monthlyspent/{year}/{month}")
-    public int getMonthlySpent(@PathVariable int year, @PathVariable int month){
+
+    public int getMonthlySpent(int year, int month){
     	LocalDate start = LocalDate.of(year, month, 1);
     	LocalDate end = null;
     	if(month == 12) end = LocalDate.of(year+1, 1, 1);
@@ -81,24 +64,36 @@ public class Controller {
     	} catch(Exception e ) {System.out.println(e.getStackTrace()); return 0;}
     }
     
-    public void deleteOld(@RequestBody LocalDate ld) {
+    public void deleteOld(LocalDate ld) {
     	facade.deleteOld(ld);
     }
     
     //use to filter the catefories based on a keyword
-    public List<Category> getAllExistingCategoriesLike(String keyWord) {
+    public List<Category> getExistingCategoriesLike(String keyWord) {
         if(this.categories==null || this.categories.size()==0) {
-            this.getAllExistingCategories();//populate the field, categories
+            this.getSavedCategories();//populate the field, categories
         }
         categories.stream().filter(c->c.getHeading().startsWith(keyWord) || c.getHeading().contains(keyWord)).collect(Collectors.toList());
         return categories;
     }
     
-    @GetMapping(path = "/categories")
-    // @PostConstruct
-    public List<Category>  getAllExistingCategories(){
+    public List<Category> getSavedCategories(){
         this.categories = ctRepo.findAll();
         this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());
         return this.categories;
+    }
+    
+    public List<Spend> filterSpendsOfMonth(int year, int month){
+    	LocalDate start = LocalDate.of(year, month, 1);
+    	LocalDate end = null;
+    	if(month == 12) {
+    	    end = LocalDate.of(year+1, Month.JANUARY, 1);
+    	    System.out.println("dec month");
+    	}
+    	else{
+    	    end = LocalDate.of(year, month+1, 1);
+    	    System.out.println("otehr month");
+    	}
+    	return repo.getBYMonth(start, end);
     }
 }
