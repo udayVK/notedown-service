@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Spend;
@@ -30,7 +28,7 @@ public class SpendService {
     private List<Category> categories;
     private List<String> categoryHeadings;
     
-    public Spend addSpend(@RequestBody Spend sp){
+    public Spend addSpend(Spend sp){
         this.getSavedCategories();
         if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
@@ -42,7 +40,7 @@ public class SpendService {
         return repo.save(sp);
     }
     
-    public List<Spend> getSpendsOfMonth(@PathVariable int year, @PathVariable int month){
+    public List<Spend> getSpendsOfMonth(int year, int month){
     	System.out.println("search for"+year+"-"+month);
 //        return facade.spendOfMonthnYear(year, month);
     	List<Spend> spl = this.filterSpendsOfMonth(year, month);
@@ -50,11 +48,11 @@ public class SpendService {
     	return spl;
     }
     
-    public Spend updateSpend(@PathVariable int id, @RequestBody Spend sp) {
+    public Spend updateSpend(int id, Spend sp) {
     	return repo.save(sp);
     }
 
-    public int getMonthlySpent(@PathVariable int year, @PathVariable int month){
+    public int getMonthlySpent(int year, int month){
     	LocalDate start = LocalDate.of(year, month, 1);
     	LocalDate end = null;
     	if(month == 12) end = LocalDate.of(year+1, 1, 1);
@@ -66,7 +64,7 @@ public class SpendService {
     	} catch(Exception e ) {System.out.println(e.getStackTrace()); return 0;}
     }
     
-    public void deleteOld(@RequestBody LocalDate ld) {
+    public void deleteOld(LocalDate ld) {
     	facade.deleteOld(ld);
     }
     
