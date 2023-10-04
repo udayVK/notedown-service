@@ -28,9 +28,9 @@ public class SpendService {
     private List<Category> categories;
     private List<String> categoryHeadings;
     
-    public Spend addSpend(Spend sp){
+    public Spend addSpend(Spend sp, boolean saveCategory){
         this.getSavedCategories();
-        if(!this.categoryHeadings.contains(sp.getCategory().getHeading())) {
+        if(saveCategory && !this.categoryHeadings.contains(sp.getCategory().getHeading())) {
             ctRepo.save(sp.getCategory());
         }
         else {

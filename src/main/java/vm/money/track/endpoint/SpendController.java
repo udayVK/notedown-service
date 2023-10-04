@@ -26,8 +26,9 @@ public class SpendController {
     private SpendService spendsService;
     
     @PostMapping(path = "/add")
-    public Spend add(@RequestBody Spend sp){
-        return spendsService.addSpend(sp);
+    public Spend add(@RequestBody Spend sp, @RequestParam boolean saveCategory){
+        System.out.println("Save Category "+sp.getCategory().getHeading()+" : "+saveCategory);
+        return spendsService.addSpend(sp,saveCategory);
     }
     
     @GetMapping(path = "/{year}/{month}")
