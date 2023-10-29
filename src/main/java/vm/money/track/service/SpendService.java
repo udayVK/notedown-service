@@ -25,16 +25,37 @@ public class SpendService {
     private CategoryRepo ctRepo;
     
     // to use in the method getAllExistingCategoriesLike etc..
-    private List<Category> categories;
+    private List<Category> allCategories;
     private List<String> categoryHeadings;
+    private List<Category> logicallySavedCateories;
     
     public Spend addSpend(Spend sp, boolean saveCategory){
-        this.getSavedCategories();
-        if(saveCategory && !this.categoryHeadings.contains(sp.getCategory().getHeading())) {
-            ctRepo.save(sp.getCategory());
+        this.getAllCategories();
+        boolean catAlreadySaved = this.categoryHeadings.contains(sp.getCategory().getHeading());
+        Category ct  = sp.getCategory();
+        if(saveCategory) {
+            //cat is not saved, save it with logicalsaveindicator as true
+            if(!catAlreadySaved) {
+                ct.setLogicalSavedIndicator(true);
+                sp.setCategory(ct);
+                ctRepo.save(sp.getCategory());
+            }
+            // cat is saved but logicalsave indicator is false. so change it to true
+            else {
+                ct = this.allCategories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0);
+                ct.setLogicalSavedIndicator(true);
+                sp.setCategory(ct);
+            }
         }
         else {
-            sp.setCategory(this.categories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0));
+            // altough saveCategory is false, save the category to DB with logicalSavedIndicator as false
+            if(!catAlreadySaved){
+                ct.setLogicalSavedIndicator(false);
+                sp.setCategory(ct);
+                ctRepo.save(ct);
+            }
+            else
+                sp.setCategory(this.allCategories.stream().filter(c->c.getHeading().equals(sp.getCategory().getHeading())).collect(Collectors.toList()).get(0));
         }
         System.out.println(sp);
         return repo.save(sp);
@@ -70,17 +91,23 @@ public class SpendService {
     
     //use to filter the catefories based on a keyword
     public List<Category> getExistingCategoriesLike(String keyWord) {
-        if(this.categories==null || this.categories.size()==0) {
-            this.getSavedCategories();//populate the field, categories
+        if(this.allCategories==null || this.allCategories.size()==0) {
+            this.getAllCategories();//populate the field, categories
         }
-        categories.stream().filter(c->c.getHeading().startsWith(keyWord) || c.getHeading().contains(keyWord)).collect(Collectors.toList());
-        return categories;
+        List<Category> matchedCategories = allCategories.stream().filter(c->c.getHeading().startsWith(keyWord) || c.getHeading().contains(keyWord)).collect(Collectors.toList());
+        return matchedCategories;
     }
     
-    public List<Category> getSavedCategories(){
-        this.categories = ctRepo.findAll();
-        this.categoryHeadings = this.categories.stream().map(c->c.getHeading()).collect(Collectors.toList());
-        return this.categories;
+    public List<Category> getLogicallySavedCategories() {
+        this.getAllCategories();
+        return this.logicallySavedCateories;
+    }
+
+    public List<Category> getAllCategories(){
+        this.allCategories = ctRepo.findAll();
+        this.categoryHeadings = this.allCategories.stream().map(c->c.getHeading()).collect(Collectors.toList());
+        this.logicallySavedCateories = this.allCategories.stream().filter(c -> c.isLogicalSavedIndicator()).collect(Collectors.toList());
+        return this.allCategories;
     }
     
     public List<Spend> filterSpendsOfMonth(int year, int month){

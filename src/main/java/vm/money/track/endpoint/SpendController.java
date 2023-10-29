@@ -50,7 +50,7 @@ public class SpendController {
     
     @GetMapping(path = "/categories")
     public List<Category> getSavedCategories(){
-        return spendsService.getSavedCategories();
+        return spendsService.getLogicallySavedCategories();
     }
     
     public void deleteOld(@RequestBody LocalDate ld) {
