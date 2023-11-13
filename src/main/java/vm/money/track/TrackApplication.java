@@ -45,7 +45,7 @@ public class TrackApplication {
 	@GetMapping(path = "/populate")
 	public String populateTheDB() throws IOException {
 		// this endpoint can never be run in production env
-		if (this.envType == "prod") {
+		if (this.envType.equalsIgnoreCase("prod")) {
 			return "Don'T run this endpoint in prod env";
 		}
 		else {
