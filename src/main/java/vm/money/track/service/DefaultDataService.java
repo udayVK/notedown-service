@@ -8,7 +8,7 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 
-import vm.money.track.endpoint.Controller;
+import vm.money.track.endpoint.SpendController;
 import vm.money.track.pojo.Category;
 import vm.money.track.pojo.Loan;
 import vm.money.track.pojo.Spend;
@@ -17,17 +17,17 @@ import vm.money.track.repos.LoanRepos;
 @Service
 public class DefaultDataService {
     
-	private Controller spendController;
+	private SpendController spendController;
     private LoanRepos loanRepo;
     
     private static final String DELIMITER = "-#-"; 
     
-    public DefaultDataService(Controller spendController, LoanRepos loanRepo) {
+    public DefaultDataService(SpendController spendController, LoanRepos loanRepo) {
         this.spendController = spendController;
         this.loanRepo = loanRepo;
     }
 
-    public boolean pupulateSpendData() {
+    public boolean populateSpendData() {
         System.out.println("populating spends");
         InputStream spendStream = this.getClass().getClassLoader().getResourceAsStream("DefaultData/spend.txt");
 		try (   InputStreamReader fileReader = new InputStreamReader(spendStream);
@@ -45,7 +45,7 @@ public class DefaultDataService {
                     sp.setDate(LocalDate.now().withMonth(rand.nextInt(1,12)).withDayOfMonth(new Random().nextInt(1,28)));
                     sp.setCategory(new Category(spendItems.get(3)));
                     System.out.println(sp);
-                    this.spendController.add(sp);
+                    this.spendController.add(sp,true);
                 }
 		} catch (Exception e) {
             System.out.println(e);

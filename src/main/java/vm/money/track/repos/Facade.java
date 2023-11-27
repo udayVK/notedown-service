@@ -35,9 +35,6 @@ public class Facade {
     	}
     	return repo.getBYMonth(start, end);
     }
-	public List<Spend> getOfspeceficPurpose(String purpose) {
-		return repo.findByPurpose(purpose);
-	}
 
 	public void deleteOld(LocalDate ld) {
 		

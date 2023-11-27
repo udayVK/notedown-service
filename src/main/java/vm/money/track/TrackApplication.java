@@ -3,6 +3,7 @@ package vm.money.track;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,9 @@ public class TrackApplication {
 
 	@Autowired
 	private DefaultDataService dataService;
+
+	@Value("${env_type}")
+	private String envType;
 
 	public static void main(String[] args) {
 		SpringApplication.run(TrackApplication.class, args);
@@ -40,11 +44,17 @@ public class TrackApplication {
 
 	@GetMapping(path = "/populate")
 	public String populateTheDB() throws IOException {
-		boolean spendsFlag = this.dataService.pupulateSpendData() ;
-		boolean loansFlag = this.dataService.populateLoanData();
-		if(spendsFlag && loansFlag)
-		return "success";
-		return "something went wrong";
+		// this endpoint can never be run in production env
+		if (this.envType.equalsIgnoreCase("prod")) {
+			return "Don'T run this endpoint in prod env";
+		}
+		else {
+			boolean spendsFlag = this.dataService.populateSpendData() ;
+			boolean loansFlag = this.dataService.populateLoanData();
+			if(spendsFlag && loansFlag)
+			return this.envType;
+			return "something went wrong";
+		}
 	}
 }
 

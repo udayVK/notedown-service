@@ -12,8 +12,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
    	private String heading;
- 
-	
+	private boolean logicalSavedIndicator;
+
 	public Category() {
 	}
 
@@ -34,6 +34,13 @@ public class Category {
 	public void setHeading(String heading) {
 		this.heading = heading;
 	}
+	public boolean isLogicalSavedIndicator() {
+		return logicalSavedIndicator;
+	}
+	public void setLogicalSavedIndicator(boolean logicalSavedIndicator) {
+		this.logicalSavedIndicator = logicalSavedIndicator;
+	}
+
     @Override
     public String toString() {
         return this.heading;

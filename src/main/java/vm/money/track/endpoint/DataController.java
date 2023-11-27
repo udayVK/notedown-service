@@ -19,9 +19,11 @@ public class DataController {
 	private DataRepos dRepo;
 	@GetMapping(path = "/monthlylimit")
 	public short getMonthlyLimit() {
-		System.out.println("get monthly limit");
+		if(dRepo.tableHasData()>0)
 		return dRepo.getMonthlyLimit();
+		return 12000;
 	}
+	
 	@PostMapping(path = "/monthlylimit/{ml}")
 	public void setMonthlyLimit(@PathVariable(name = "ml")short limit) {
 		System.out.println("setting monthly limit of "+ limit);
